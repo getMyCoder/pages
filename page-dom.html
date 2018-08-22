@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	<title>Document</title>
+	<link rel="stylesheet" type="text/css" href="../jquery.css"/>
+	<script type="text/javascript" src="../jquery.js"></script>
+	<style type="text/css">
+		.main{width: 650px;border:1px solid #ccc;margin: 50px auto 0;}
+		.page{margin: 5px 0;text-align: center}
+		.page span,.pages i{height: 25px;display: inline-block;border:1px solid #ccc;line-height: 25px;padding: 0 10px; cursor: pointer;-webkit-border-radius: 3px;-moz-border-radius: 3px;border-radius: 3px; }
+		.page span:hover{background: #3d95d5;color: #fff; }
+		.pages{border:none !important;padding: 0 !important;margin: 0 !important;display: inline-block}
+		.pages span{padding: 0 10px;margin: 0 3px;}
+		.active{background: #3d95d5;color: #fff;}
+		.con{border:1px solid #ccc;margin: 15px;height: 200px;}
+
+
+	</style>
+</head>
+<body>
+<div class="main">
+	<div class="con">
+		<p class="name"></p>
+		<p class="age"></p>
+	</div>
+	<div class="page">
+		<span class="pro"><</span>
+		  <p class="pages">
+
+		  </p>
+		<span class="next">></span>
+	</div>
+</div>
+<script type="text/javascript">
+    $(function(){
+        var itemsLength=0;
+        var getVal=1;
+        var items=0;
+        getAjax(getVal);
+        $(".pro").hide();
+        for(var i=1;i<=itemsLength;i++){
+            $(".pages").append("<span>"+i+"</span>");
+            if(i==1){
+                $(".pages").append("<i class='pagesS'>...</i>");
+			}else if(i==itemsLength-1){
+                $(".pages").append("<i class='pagesE'>...</i>");
+			}
+		}
+		$(".pagesS").hide();
+        $(".pages span").eq(0).addClass("active");
+        $(".pages span").each(function (index) {
+            if (index>2 && index<itemsLength){
+                $(".pages span").eq(index).hide();
+            }
+            $(".pages span").eq(0).show();
+            $(".pages span").eq(itemsLength-1).show();
+            $(this).click(function () {
+                items=index;
+                getVal=parseInt($(this).html());
+                getPages(index);
+            })
+        });
+        $(".pro").click(function () {
+            items =items - 1;
+            getPages(items)
+        });
+        $(".next").click(function () {
+            items =items + 1;
+            getPages(items)
+        });
+        function getPages(index) {
+            $(".pages span").removeClass('active');
+            $(".pages span").eq(index).addClass('active');
+            $(".pages span").hide();
+            $(".pages span").eq(0).show();
+            $(".pages span").eq(itemsLength-1).show();
+            if (index>=2){
+                if (index>2){
+                    $(".pagesS").show();
+                }else{
+                    $(".pagesS").hide();
+                }
+            }else{
+                $(".pagesS").hide();
+			}
+            if(index>=itemsLength-4){
+                if (index>itemsLength-4){
+                    $(".pagesE").hide();
+                }else{
+                    $(".pagesE").show();
+                }
+            }else{
+                $(".pagesE").show();
+			}
+            if(index==0){
+                $(".pro").hide()
+			}else{
+                $(".pro").show()
+			}
+            if(index==itemsLength-1){
+                $(".next").hide()
+            }else{
+                $(".next").show()
+            }
+            $(".pages span").eq(index-1).show();
+            $(".pages span").eq(index).show();
+            $(".pages span").eq(index+1).show();
+            getAjax(getVal);
+        }
+        function getAjax(val) {
+            $.ajax({
+                type:"post",
+                url:"./json.json",
+				async:false,
+                success:function(response){
+                    if (itemsLength==0){
+                        itemsLength=response.name.length;
+                    }
+                    if (response.name[val-1]){
+                        $(".con .name").text("姓名："+response.name[val-1]);
+                        $(".con .age").text("年龄："+response.age[val-1])
+                    }else{
+                        $(".con").html("数据不存在···")
+                    }
+                }
+            });
+        }
+    })
+</script>
+</body>
+</html>

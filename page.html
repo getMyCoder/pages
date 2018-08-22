@@ -1,0 +1,157 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	<title>Document</title>
+	<link rel="stylesheet" type="text/css" href="jquery.css"/>
+	<script type="text/javascript" src="jquery.js"></script>
+	<style type="text/css">
+         .main{width: 650px;border:1px solid #ccc;margin: 50px auto 0;}
+		.items{margin: 5px 0;text-align: center}
+		.items span{height: 25px;display: inline-block;border:1px solid #ccc;line-height: 25px;padding: 0 10px;margin: 0 2px;cursor: pointer;-webkit-border-radius: 3px;-moz-border-radius: 3px;border-radius: 3px; }
+		.items span:hover{background: #3d95d5;color: #fff; }
+		.itm{border:none !important;padding: 0 !important;margin: 0 !important;display: inline-block}
+		.itm span{padding: 0 10px;}
+		.active{background: #3d95d5;color: #fff;}
+		.con{border:1px solid #ccc;margin: 15px;height: 200px;}
+	</style>
+</head>
+<body>
+	<div class="main">
+		<div class="con">
+			<p class="name"></p>
+			<p class="age"></p>
+		</div>
+         <div class="items">
+			 <span class="start">首页</span>
+			 <span class="pro"><</span>
+			 <p class="itm"></p>
+			 <span class="next">></span>
+			 <span class="end">尾页</span>
+		 </div>
+	</div>
+	<script type="text/javascript">
+         $(function(){
+             var pageS=8;           //显示多少个页码
+             var numLength=0;       //一共有多少页码
+             var SelActive=0;       //默认是第几页
+             var start=1,end=pageS;
+             var sizeVal=0;
+             getAjax(1);
+             for(var i=start;i<=end;i++){
+                 $(".itm").append("<span>"+i+"</span>");
+             }
+             $(".itm span").eq(SelActive).addClass("active");
+             // 前、后
+              $(".next").click(function () {
+                  getPost(1);
+              });
+             $(".pro").click(function () {
+                 getPost(-1)
+             });
+             // 点击循环
+             $(".itm span").each(function (index) {
+				 $(this).click(function () {
+                     sizeDom(index,$(this))
+                 })
+             });
+             // 首尾
+             $(".start").click(function () {
+                 $(".itm span").remove('');
+                 SelActive=0;
+                 start=1;
+                 end=pageS;
+                 StartAndEnd(start,end)
+             });
+             $(".end").click(function () {
+                 $(".itm span").remove('');
+                 SelActive=pageS-1;
+                 start=numLength-(pageS-1);
+                 end=numLength;
+                 StartAndEnd(start,end)
+             });
+ // ---------------------------------------------------------------------------------------------
+         // 添加样式
+			function getPost(getS) {
+                SelActive+=getS;
+                if(SelActive>pageS-1){
+                    SelActive=pageS-1;
+                    sizePos(getS);
+                }else if(SelActive<0){
+                    SelActive=0;
+                    sizePos(getS);
+                }
+                $(".itm span").eq(SelActive).addClass("active").siblings().removeClass('active');
+                sizeVal=parseInt($(".itm span").eq(SelActive).html());
+                getAjax(sizeVal)
+            }
+         // 创建列表数
+			function sizePos(getS) {
+                $(".itm span").remove('');
+                start+=getS;
+                end+=getS;
+                if (start<=1 || end<=pageS){
+                   start=1;
+                   end=pageS;
+                }else if(start>=numLength-(pageS-1) || end>=numLength){
+                   start=numLength-(pageS-1);
+                   end=numLength;
+                }
+                for(var i=start;i<=end;i++){
+                	$(".itm").append("<span>"+i+"</span>");
+                }
+                $(".itm span").each(function (index) {
+                    $(this).click(function () {
+                        SelActive=index;
+                        $(this).addClass("active").siblings().removeClass('active');
+                        sizeDom(index,$(this))
+                    })
+                });
+            }
+         // 点击选择
+            function sizeDom(index,that) {
+                SelActive=index;
+                that.addClass("active").siblings().removeClass('active');
+                sizeVal=parseInt($(".itm span").eq(SelActive).html());
+                getAjax(sizeVal)
+            }
+         // 首尾
+            function StartAndEnd(staP,endP) {
+                 $(".itm span").remove('');
+                 for(var i=staP;i<=endP;i++){
+                     $(".itm").append("<span>"+i+"</span>");
+                 };
+                 $(".itm span").eq(SelActive).addClass("active").siblings().removeClass('active');
+                sizeVal=parseInt($(".itm span").eq(SelActive).html());
+                 getAjax(sizeVal)
+                 $(".itm span").each(function (index) {
+                     $(this).click(function () {
+                         SelActive=index;
+                         $(this).addClass("active").siblings().removeClass('active');
+                         sizeDom(index,$(this))
+                     })
+                 });
+             }
+            function getAjax(val) {
+                $.ajax({
+                    type:"get",
+                    url:"json.json",
+                    success:function(response){
+                        if (numLength==0){
+                            numLength=response.name.length;
+						}
+						if (response.name[val-1]){
+                            $(".con .name").text("姓名："+response.name[val-1]);
+                            $(".con .age").text("年龄："+response.age[val-1])
+						}else{
+                            $(".con").html("数据不存在···")
+						}
+                    }
+                });
+            }
+		 })
+	</script>
+</body>
+</html>

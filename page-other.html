@@ -1,0 +1,160 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	<title>Document</title>
+	<link rel="stylesheet" type="text/css" href="../jquery.css"/>
+	<script type="text/javascript" src="../jquery.js"></script>
+	<style type="text/css">
+         .main{width: 650px;border:1px solid #ccc;margin: 50px auto 0;}
+		.items{margin: 5px 0;text-align: center}
+		.items span,.startSS,.startSE{height: 25px;display: inline-block;border:1px solid #ccc;line-height: 25px;padding: 0 10px; cursor: pointer;-webkit-border-radius: 3px;-moz-border-radius: 3px;border-radius: 3px; }
+		.items span:hover{background: #3d95d5;color: #fff; }
+		.itm{border:none !important;padding: 0 !important;margin: 0 !important;display: inline-block}
+		.itm span{padding: 0 10px;}
+		.active{background: #3d95d5;color: #fff;}
+		.con{border:1px solid #ccc;margin: 15px;height: 200px;}
+		.pageStart,.pageEnd,.pageItems{ display: inline-block;overflow: hidden;}
+		.itm span{margin: 0 0 0 4px;}
+		.itm span:first-child{margin: 0 0 0 0 !important;}
+		.startSS{display: none;}
+		.startSE{}
+		.startSon{display: inline-block !important}
+
+	</style>
+</head>
+<body>
+	<div class="main">
+		<div class="con">
+			<p class="name"></p>
+			<p class="age"></p>
+		</div>
+         <div class="items">
+			 <div class="pageStart">
+				 <span class="start">首页</span>
+				 <span class="pro"><</span>
+			 </div>
+			 <div class="pageItems">
+				 <span class="startS"></span>
+				 <p class="startSS">...</p>
+				 <p class="itm">
+
+				 </p>
+				 <p class="startSE">...</p>
+				 <span class="laseS"></span>
+			 </div>
+			 <div class="pageEnd">
+				 <span class="next">></span>
+				 <span class="end">尾页</span>
+			 </div>
+		 </div>
+	</div>
+	<script type="text/javascript">
+         $(function(){
+              var itemsLength=16;
+              var items=1;
+              var beginS=0;
+              var itemsSize=3;
+              var flag=false;
+              $(".startS").html(1);
+              $(".laseS").html(itemsLength);
+              $(".pageItems span").eq(0).addClass('active');
+              for(var i=0;i<itemsSize;i++){
+                  $(".itm").append("<span></span>");
+			  }
+             $(".itm span").eq(2).hide();
+			  $(".pageItems span").each(function (index) {
+                  $(".itm span").eq(index).html(index+2);
+
+
+                  $(this).click(function () {
+
+
+                      items=parseInt($(".pageItems span").eq(index).html());
+                      if(items==itemsLength){
+                          $(".itm span").eq(0).removeClass('startSon');
+                          $(".startSS").addClass('startSon');
+                          for (var j=0;j<itemsSize;j++){
+                              $(".itm span").eq(j).html(items-3+j);
+                          }
+						  $(".itm span").eq(0).hide();
+                          $(".startSE").hide();
+                          flag=false;
+                          $(".pageItems span").removeClass('active');
+                          $(".itm span").eq(1).addClass('active');
+					  }
+                      if(items==1 || items==2){
+                          beginS=items;
+                          if(items==2){
+                              beginS=1;
+						  }
+                          for (var j=0;j<itemsSize;j++){
+                              $(".itm span").eq(j).html(beginS+1+j);
+                          }
+                          $(".startSS").removeClass('startSon');
+                          flag=false;
+                          $(".itm span").eq(2).hide();
+                          $(".itm span").eq(2).removeClass('startSon');
+                      }else {
+                          $(".itm span").eq(2).addClass('startSon')
+					  }
+
+
+                      $(".pageItems span").removeClass('active');
+                      $(".pageItems span").eq(index).addClass('active');
+                      if (items>=3 && items<=(itemsLength-2)){
+                          $(".startSS").addClass('startSon');
+                          flag=true;
+                      }else{
+                          flag=false;
+					  }
+
+                      if(flag && items<=(itemsLength-2)){
+                          for (var j=0;j<itemsSize;j++){
+                              $(".itm span").eq(j).html(items-1+j);
+						  }
+                          if(items<=3){
+                              $(".startSS").removeClass('startSon');
+                              flag=false;
+						  }
+                          if(items==(itemsLength-2)){
+                              // $(".itm span").eq(0).addClass('startSon');
+                              $(".startSE").hide();
+                              flag=false;
+						  }
+                          $(".pageItems span").removeClass('active');
+                          $(".itm span").eq(1).addClass('active');
+					  }
+
+
+                      if(items>(itemsLength-2)) {
+                          $(".itm span").eq(0).removeClass('startSon');
+                          $(".itm span").eq(0).hide();
+                      }else{
+                          $(".itm span").eq(0).addClass('startSon');
+					  }
+                      if(items<=(itemsLength-3)){
+                          $(".startSE").addClass('startSon');
+					  }else{
+                          $(".startSE").removeClass('startSon')
+					  }
+
+
+                  });
+
+
+
+
+
+
+
+                  $(".pro").click(function () {
+                      console.log(items);
+                  })
+              })
+		 })
+	</script>
+</body>
+</html>
